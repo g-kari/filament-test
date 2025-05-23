@@ -15,7 +15,7 @@ echo "Setting up Laravel and Filament..."
 cd /var/www
 
 # Clear existing files except for docker and setup files
-find . -mindepth 1 -not -path "./docker*" -not -name "docker-compose.yml" -not -name "setup-filament.sh" -not -path "./.git*" -not -path "./storage*" -delete
+find . -mindepth 1 -not -path "./docker*" -not -name "docker-compose.yml" -not -name "setup-filament.sh" -not -name ".env.example" -not -path "./.git*" -not -path "./storage*" -delete
 
 # Create a new Laravel project
 echo "Creating a new Laravel project..."
