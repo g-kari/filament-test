@@ -1,16 +1,18 @@
 <?php
 
 // Simple test file to verify PHP-FPM and Nginx configuration
-echo '<h1>Statamic Docker Environment Test</h1>';
+echo '<h1>Filament Docker Environment Test</h1>';
 echo '<p>If you can see this message, your PHP-FPM and Nginx setup is working correctly.</p>';
+echo '<p>Please follow the instructions in the README.md to set up Laravel and Filament.</p>';
+echo '<p>Once installed, you can access Filament at: <a href="/admin">/admin</a></p>';
 
 // Display PHP information for verification
 phpinfo();
 
 // Test MySQL connection
 try {
-    $dsn = 'mysql:host=db;dbname=statamic';
-    $username = 'statamic';
+    $dsn = 'mysql:host=db;dbname=filament';
+    $username = 'filament';
     $password = 'secret';
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
