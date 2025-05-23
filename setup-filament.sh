@@ -30,7 +30,6 @@ sed -i "s/DB_PASSWORD=/DB_PASSWORD=secret/" .env
 sed -i "s/REDIS_HOST=127.0.0.1/REDIS_HOST=valkey/" .env
 
 # Install Filament
-echo "Installing Filament..."
 composer require filament/filament:"^3.0-stable" -W
 
 # Run migrations and Filament installation
