@@ -27,14 +27,21 @@ docker-compose up -d
 
 # Wait for containers to be ready
 echo "Waiting for containers to be ready..."
-sleep 5
+timeout=60  # Maximum wait time in seconds
+interval=5  # Interval between checks in seconds
+elapsed=0
 
-# Check if the containers are running
-if ! docker-compose ps | grep -q "Up"; then
-  echo "Failed to start Docker containers. Please check the logs with 'docker-compose logs'"
-  exit 1
-fi
+while ! docker-compose ps | grep -q "Up"; do
+  if [ $elapsed -ge $timeout ]; then
+    echo "Timeout reached. Failed to start Docker containers. Please check the logs with 'docker-compose logs'"
+    exit 1
+  fi
+  echo "Containers not ready yet. Retrying in $interval seconds..."
+  sleep $interval
+  elapsed=$((elapsed + interval))
+done
 
+echo "Containers are ready."
 # Ask if user wants to run the setup script
 read -p "Do you want to run the Filament setup script? (y/n): " -n 1 -r
 echo
