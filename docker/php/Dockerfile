@@ -9,13 +9,18 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     zip \
-    unzip
+    unzip \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libicu-dev \
+    libpq-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -29,6 +34,12 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 
 # Copy existing application directory permissions
 COPY --chown=www:www . /var/www
+
+# Set PHP configuration
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+RUN echo "memory_limit=512M" >> "$PHP_INI_DIR/php.ini"
+RUN echo "upload_max_filesize=64M" >> "$PHP_INI_DIR/php.ini"
+RUN echo "post_max_size=64M" >> "$PHP_INI_DIR/php.ini"
 
 # Change current user to www
 USER www
