@@ -13,6 +13,9 @@ services:
       - ./:/var/www
     networks:
       - filament
+    environment:
+      - PHP_MEMORY_LIMIT=512M
+      - COMPOSER_MEMORY_LIMIT=-1
 
   # Nginx Service
   web:
