@@ -51,8 +51,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   # Create a Filament user
   echo
-  echo "Creating a Filament user..."
-  docker-compose exec -T app php artisan make:filament-user
+  echo "Filament setup script completed."
 else
   echo "Skipping setup script. You can run it later with:"
   echo "docker-compose exec app bash -c './setup-filament.sh'"
