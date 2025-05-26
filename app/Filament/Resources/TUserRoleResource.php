@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TUserRoleResource\Pages;
 use App\Filament\Traits\HasAuditFields;
-use App\Models\MUserRole;
 use App\Models\TUser;
 use App\Models\TUserRole;
 use Filament\Forms;
@@ -37,7 +36,7 @@ class TUserRoleResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('m_user_role_id')
                     ->label('ロール')
-                    ->options(MUserRole::all()->pluck('role_name', 'id'))
+                    ->relationship('role', 'role_name')
                     ->searchable()
                     ->required(),
                 ...self::getAuditFields(),
