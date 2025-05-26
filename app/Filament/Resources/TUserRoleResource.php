@@ -30,7 +30,7 @@ class TUserRoleResource extends Resource
             ->schema([
                 Forms\Components\Select::make('t_user_id')
                     ->label('ユーザー')
-                    ->options(TUser::all()->pluck('user_name', 'id'))
+                    ->relationship('user', 'user_name')
                     ->searchable()
                     ->required(),
                 Forms\Components\Select::make('m_user_role_id')
