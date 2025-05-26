@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TUserResource\Pages;
+use App\Filament\Traits\HasAuditFields;
 use App\Models\TUser;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,6 +13,7 @@ use Filament\Tables\Table;
 
 class TUserResource extends Resource
 {
+    use HasAuditFields;
     protected static ?string $model = TUser::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
@@ -33,12 +35,7 @@ class TUserResource extends Resource
                 Forms\Components\TextInput::make('user_name')
                     ->required()
                     ->label('ユーザー名'),
-                Forms\Components\TextInput::make('created_by')
-                    ->label('作成者'),
-                Forms\Components\TextInput::make('updated_by')
-                    ->label('更新者'),
-                Forms\Components\TextInput::make('deleted_by')
-                    ->label('削除者'),
+                ...self::getAuditFields(),
             ]);
     }
 

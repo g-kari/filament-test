@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TUserRoleResource\Pages;
+use App\Filament\Traits\HasAuditFields;
 use App\Models\MUserRole;
 use App\Models\TUser;
 use App\Models\TUserRole;
@@ -14,6 +15,7 @@ use Filament\Tables\Table;
 
 class TUserRoleResource extends Resource
 {
+    use HasAuditFields;
     protected static ?string $model = TUserRole::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
@@ -38,12 +40,7 @@ class TUserRoleResource extends Resource
                     ->options(MUserRole::all()->pluck('role_name', 'id'))
                     ->searchable()
                     ->required(),
-                Forms\Components\TextInput::make('created_by')
-                    ->label('作成者'),
-                Forms\Components\TextInput::make('updated_by')
-                    ->label('更新者'),
-                Forms\Components\TextInput::make('deleted_by')
-                    ->label('削除者'),
+                ...self::getAuditFields(),
             ]);
     }
 

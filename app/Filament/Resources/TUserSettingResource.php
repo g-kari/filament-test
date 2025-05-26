@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TUserSettingResource\Pages;
+use App\Filament\Traits\HasAuditFields;
 use App\Models\TUser;
 use App\Models\TUserSetting;
 use Filament\Forms;
@@ -13,6 +14,7 @@ use Filament\Tables\Table;
 
 class TUserSettingResource extends Resource
 {
+    use HasAuditFields;
     protected static ?string $model = TUserSetting::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog';
@@ -38,12 +40,7 @@ class TUserSettingResource extends Resource
                 Forms\Components\Textarea::make('setting_value')
                     ->required()
                     ->label('設定値'),
-                Forms\Components\TextInput::make('created_by')
-                    ->label('作成者'),
-                Forms\Components\TextInput::make('updated_by')
-                    ->label('更新者'),
-                Forms\Components\TextInput::make('deleted_by')
-                    ->label('削除者'),
+                ...self::getAuditFields(),
             ]);
     }
 
