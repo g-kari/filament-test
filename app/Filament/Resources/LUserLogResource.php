@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LUserLogResource\Pages;
+use App\Filament\Traits\HasAuditFields;
 use App\Models\LUserLog;
 use App\Models\TUser;
 use Filament\Forms;
@@ -13,6 +14,7 @@ use Filament\Tables\Table;
 
 class LUserLogResource extends Resource
 {
+    use HasAuditFields;
     protected static ?string $model = LUserLog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
@@ -38,12 +40,7 @@ class LUserLogResource extends Resource
                 Forms\Components\Textarea::make('log_message')
                     ->required()
                     ->label('ログメッセージ'),
-                Forms\Components\TextInput::make('created_by')
-                    ->label('作成者'),
-                Forms\Components\TextInput::make('updated_by')
-                    ->label('更新者'),
-                Forms\Components\TextInput::make('deleted_by')
-                    ->label('削除者'),
+                ...self::getAuditFields(),
             ]);
     }
 
