@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TUserSettingResource\Pages;
-use App\Models\TUser;
 use App\Models\TUserSetting;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -29,7 +28,7 @@ class TUserSettingResource extends Resource
             ->schema([
                 Forms\Components\Select::make('t_user_id')
                     ->label('ユーザー')
-                    ->options(TUser::all()->pluck('user_name', 'id'))
+                    ->relationship('user', 'user_name')
                     ->searchable()
                     ->required(),
                 Forms\Components\TextInput::make('setting_key')
