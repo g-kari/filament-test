@@ -14,6 +14,10 @@ class ListTUserRoles extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\ExportAction::make()
+                ->label('CSVエクスポート')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->exporter(\App\Filament\Exports\TUserRoleExporter::class),
         ];
     }
 }
