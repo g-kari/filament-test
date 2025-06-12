@@ -37,38 +37,15 @@ class TUserSettingResource extends Resource
                     ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 
                 // Show single fields for editing existing records
-                Forms\Components\Group::make([
-                    Forms\Components\TextInput::make('setting_key')
-                        ->required()
-                        ->label('設定キー'),
-                    Forms\Components\Textarea::make('setting_value')
-                        ->required()
-                        ->label('設定値'),
-                ])
-                ->visible(fn (string $operation): bool => $operation === 'edit'),
-
-                // Show repeater for creating new records
-                Forms\Components\Repeater::make('user_settings')
-                    ->label('設定項目')
-                    ->schema([
-                        Forms\Components\TextInput::make('setting_key')
-                            ->required()
-                            ->label('設定キー')
-                            ->columnSpan(1),
-                        Forms\Components\Textarea::make('setting_value')
-                            ->required()
-                            ->label('設定値')
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->addActionLabel('+ 設定項目を追加')
-                    ->deleteActionLabel('- 削除')
-                    ->reorderableWithButtons()
-                    ->minItems(1)
-                    ->defaultItems(1)
-                    ->collapsible()
-                    ->itemLabel(fn (array $state): ?string => $state['setting_key'] ?? '新しい設定')
-                    ->visible(fn (string $operation): bool => $operation === 'create'),
+                Forms\Components\TextInput::make('setting_key')
+                    ->required()
+                    ->label('設定キー')
+                    ->visible(fn (string $operation): bool => $operation === 'edit'),
+                
+                Forms\Components\Textarea::make('setting_value')
+                    ->required()
+                    ->label('設定値')
+                    ->visible(fn (string $operation): bool => $operation === 'edit'),
                 
                 ...self::getAuditFields(),
             ]);
