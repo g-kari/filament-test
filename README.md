@@ -94,3 +94,7 @@ If you encounter any issues:
    ```
    docker-compose restart
    ```
+
+## Production Hosting
+
+For production deployment considerations, hosting service recommendations, and deployment strategies, see [HOSTING.md](HOSTING.md).
