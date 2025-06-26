@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # FrankenPHP Development Service
+  frankenphp-dev:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile
+    container_name: filament-frankenphp-dev
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+    networks:
+      - filament
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=db
+      - DB_DATABASE=filament
+      - DB_USERNAME=filament
+      - DB_PASSWORD=secret
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+      - COMPOSER_MEMORY_LIMIT=-1
+    depends_on:
+      - db
+      - valkey
+    # Override command for development with auto-reload
+    command: frankenphp run --config /etc/caddy/Caddyfile --watch
+
+  # MySQL Service (unchanged)
+  db:
+    image: mysql:8.0
+    container_name: filament-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: filament
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: filament
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - filament-mysql-dev:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - filament
+
+  # Valkey Service (unchanged)
+  valkey:
+    image: valkey/valkey:latest
+    container_name: filament-valkey-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - filament-valkey-dev:/data
+    networks:
+      - filament
+
+networks:
+  filament:
+    driver: bridge
+
+volumes:
+  filament-mysql-dev:
+    driver: local
+  filament-valkey-dev:
+    driver: local

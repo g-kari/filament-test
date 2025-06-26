@@ -22,32 +22,42 @@ class CreateTImage extends CreateRecord
             $mimeType = $uploadedFile->getMimeType();
             $fileSize = $uploadedFile->getSize();
             
-            // Generate hash
+            // Generate hash of the processed/edited file
             $fileHash = hash_file('sha256', $uploadedFile->getRealPath());
             
             // Get file extension
             $extension = $uploadedFile->getClientOriginalExtension();
             
-            // Generate converted filename
-            $convertedFilename = $fileHash . '.' . $extension;
+            // Generate converted filename with timestamp for uniqueness
+            $convertedFilename = $fileHash . '_' . time() . '.' . $extension;
             
-            // Store the file
+            // Store the file (this will be the edited version)
             $path = $uploadedFile->storeAs('images', $convertedFilename, 'public');
             
-            // Get image dimensions if it's an image
+            // Get image dimensions of the processed/edited image
             $width = null;
             $height = null;
             
             if (str_starts_with($mimeType, 'image/')) {
                 try {
-                    // Try to get image dimensions
+                    // Get dimensions of the edited image
                     $imageInfo = getimagesize($uploadedFile->getRealPath());
                     if ($imageInfo) {
                         $width = $imageInfo[0];
                         $height = $imageInfo[1];
                     }
                 } catch (\Exception $e) {
-                    // Ignore errors, dimensions will remain null
+                    // Fallback: try to get dimensions from storage
+                    try {
+                        $storedPath = Storage::disk('public')->path($path);
+                        $imageInfo = getimagesize($storedPath);
+                        if ($imageInfo) {
+                            $width = $imageInfo[0];
+                            $height = $imageInfo[1];
+                        }
+                    } catch (\Exception $e2) {
+                        // Ignore errors, dimensions will remain null
+                    }
                 }
             }
             

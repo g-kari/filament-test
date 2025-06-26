@@ -39,6 +39,20 @@ class TImageResource extends Resource
                     ->maxSize(10240) // 10MB
                     ->directory('images')
                     ->visibility('public')
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '16:9',
+                        '4:3',
+                        '1:1',
+                        '3:4',
+                        '9:16',
+                    ])
+                    ->imageEditorMode(2)
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1')
+                    ->imageResizeTargetWidth('1920')
+                    ->imageResizeTargetHeight('1080')
                     ->getUploadedFileNameForStorageUsing(
                         fn (TemporaryUploadedFile $file): string => (string) str(
                             hash('sha256', $file->getClientOriginalName() . time()) . '.' . $file->getClientOriginalExtension()
@@ -51,6 +65,40 @@ class TImageResource extends Resource
                         }
                     })
                     ->hiddenOn('edit'),
+                
+                Forms\Components\FileUpload::make('replacement_image')
+                    ->label('画像を差し替え')
+                    ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'])
+                    ->maxSize(10240) // 10MB
+                    ->directory('images')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '16:9',
+                        '4:3',
+                        '1:1',
+                        '3:4',
+                        '9:16',
+                    ])
+                    ->imageEditorMode(2)
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1')
+                    ->imageResizeTargetWidth('1920')
+                    ->imageResizeTargetHeight('1080')
+                    ->getUploadedFileNameForStorageUsing(
+                        fn (TemporaryUploadedFile $file): string => (string) str(
+                            hash('sha256', $file->getClientOriginalName() . time()) . '.' . $file->getClientOriginalExtension()
+                        )
+                    )
+                    ->visibleOn('edit')
+                    ->helperText('新しい画像をアップロードすると、既存の画像を置き換えます'),
+                
+                Forms\Components\ViewField::make('current_image_preview')
+                    ->label('現在の画像')
+                    ->view('filament.forms.components.image-preview')
+                    ->visibleOn('edit'),
                 
                 Forms\Components\TextInput::make('original_filename')
                     ->label('オリジナルファイル名')

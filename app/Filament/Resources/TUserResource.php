@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TUserResource\Pages;
 use App\Filament\Traits\HasAuditFields;
 use App\Models\TUser;
+use App\Models\MUserRole;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,6 +36,12 @@ class TUserResource extends Resource
                 Forms\Components\TextInput::make('user_name')
                     ->required()
                     ->label('ユーザー名'),
+                Forms\Components\Select::make('roles')
+                    ->multiple()
+                    ->relationship('roles', 'role_name')
+                    ->options(MUserRole::all()->pluck('role_name', 'id'))
+                    ->label('ユーザーロール')
+                    ->helperText('複数のロールを選択できます'),
                 ...self::getAuditFields(),
             ]);
     }
@@ -54,6 +61,10 @@ class TUserResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('ユーザー名'),
+                Tables\Columns\TextColumn::make('roles.role_name')
+                    ->badge()
+                    ->separator(',')
+                    ->label('ロール'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

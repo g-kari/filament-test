@@ -1,8 +1,8 @@
-# Post Model for Filament Demo
+# Filamentデモ用Postモデル
 
-This document contains the model definition that will be used for the Post model in the Filament demo.
+このドキュメントには、FilamentデモでPostモデルに使用されるモデル定義が含まれています。
 
-## Migration
+## マイグレーション
 
 ```php
 <?php
@@ -31,7 +31,7 @@ return new class extends Migration
 };
 ```
 
-## Model
+## モデル
 
 ```php
 <?php
@@ -49,16 +49,16 @@ class Post extends Model
 }
 ```
 
-## Filament Resource
+## Filamentリソース
 
-The Post resource will be created using the following command:
+Postリソースは以下のコマンドを使用して作成されます：
 
 ```bash
 php artisan make:filament-resource Post --generate
 ```
 
-This will automatically generate the following:
-- A resource class in `app/Filament/Resources/PostResource.php`
-- A list page
-- A create/edit form
-- Resource relations (if any)
+これにより以下が自動生成されます：
+- `app/Filament/Resources/PostResource.php`のリソースクラス
+- 一覧ページ
+- 作成/編集フォーム
+- リソースリレーション（存在する場合）

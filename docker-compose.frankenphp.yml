@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # FrankenPHP Service (replaces both app and web services)
+  frankenphp:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile
+    container_name: filament-frankenphp
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - filament
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_DATABASE=filament
+      - DB_USERNAME=filament
+      - DB_PASSWORD=secret
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - valkey
+
+  # MySQL Service (unchanged)
+  db:
+    image: mysql:8.0
+    container_name: filament-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: filament
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: filament
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - filament-mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - filament
+
+  # Valkey Service (unchanged)
+  valkey:
+    image: valkey/valkey:latest
+    container_name: filament-valkey
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - filament-valkey:/data
+    networks:
+      - filament
+
+  # Optional: Worker service for queue processing
+  worker:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile
+    container_name: filament-worker
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    networks:
+      - filament
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_DATABASE=filament
+      - DB_USERNAME=filament
+      - DB_PASSWORD=secret
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - valkey
+      - frankenphp
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    working_dir: /var/www
+
+  # Optional: Scheduler service for cron jobs
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile
+    container_name: filament-scheduler
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    networks:
+      - filament
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_DATABASE=filament
+      - DB_USERNAME=filament
+      - DB_PASSWORD=secret
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - valkey
+      - frankenphp
+    command: /bin/bash -c "while true; do php artisan schedule:run; sleep 60; done"
+    working_dir: /var/www
+
+networks:
+  filament:
+    driver: bridge
+
+volumes:
+  filament-mysql:
+    driver: local
+  filament-valkey:
+    driver: local

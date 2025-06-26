@@ -1,0 +1,67 @@
+# Global options for FrankenPHP
+{
+	frankenphp {
+		num_threads 2
+	}
+}
+
+# HTTP site
+:80 {
+	# Root directory
+	root * /var/www/public
+
+	# Enable PHP files processing with FrankenPHP
+	php_server {
+		env APP_ENV production
+		env APP_DEBUG false
+	}
+
+	# Enable compression
+	encode gzip
+
+	# Handle Laravel routes
+	try_files {path} {path}/ /index.php?{query}
+
+	# Security headers
+	header {
+		# Security headers
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy strict-origin-when-cross-origin
+		
+		# Remove server information
+		-Server
+	}
+
+	# Static file handling with caching
+	@static {
+		file
+		path *.css *.js *.ico *.png *.jpg *.jpeg *.gif *.svg *.woff *.woff2 *.ttf *.eot
+	}
+	
+	handle @static {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
+	# Handle PHP files
+	@php {
+		path *.php
+	}
+	
+	handle @php {
+		php_fastcgi unix//var/run/php/php-fpm.sock
+	}
+
+	# Logging
+	log {
+		output file /var/log/caddy/access.log
+		format json
+	}
+
+	# Handle errors
+	handle_errors {
+		respond "Internal Server Error" 500
+	}
+}

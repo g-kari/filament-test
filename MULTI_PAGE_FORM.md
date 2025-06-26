@@ -1,78 +1,78 @@
-# Multi-Page Form Implementation for TUserSetting
+# TUserSetting向けマルチページフォーム実装
 
-## Overview
+## 概要
 
-This implementation adds a multi-page wizard form for creating TUserSetting records, replacing the single-page repeater form with a guided 4-step process.
+この実装では、TUserSettingレコード作成のためのマルチページウィザードフォームを追加し、単一ページのリピーターフォームを4ステップのガイド付きプロセスに置き換えます。
 
-## Features
+## 機能
 
-### 4-Step Wizard Process
+### 4ステップウィザードプロセス
 
-1. **User Selection** (ユーザー選択)
-   - Select the user for whom settings will be created
-   - Searchable dropdown with user names
-   - Required field validation
+1. **ユーザー選択**
+   - 設定を作成するユーザーを選択
+   - ユーザー名での検索可能なドロップダウン
+   - 必須フィールドのバリデーション
 
-2. **Settings Configuration** (設定項目)
-   - Repeater component for adding multiple settings
-   - Setting key and value pairs
-   - Minimum 1 item required
-   - Add, delete, reorder, and clone functionality
-   - Collapsible items with dynamic labels
+2. **設定項目**
+   - 複数の設定を追加するためのリピーターコンポーネント
+   - 設定キーと値のペア
+   - 最低1項目が必要
+   - 追加、削除、並び替え、複製機能
+   - 動的ラベル付きの折りたたみ可能なアイテム
 
-3. **Audit Information** (監査情報)
-   - Optional audit fields: created_by, updated_by, deleted_by
-   - Grid layout for better organization
+3. **監査情報**
+   - オプションの監査フィールド：created_by、updated_by、deleted_by
+   - より良い構成のためのグリッドレイアウト
 
-4. **Review & Confirmation** (確認)
-   - Summary of selected user and settings count
-   - Visual preview of all setting items
-   - Final confirmation before creation
+4. **確認**
+   - 選択されたユーザーと設定数の概要
+   - すべての設定項目の視覚的プレビュー
+   - 作成前の最終確認
 
-## Technical Implementation
+## 技術実装
 
-### Files Modified
+### 変更されたファイル
 
 - `app/Filament/Resources/TUserSettingResource.php`
-  - Simplified form schema for edit operations
-  - Removed create-specific repeater logic
+  - 編集操作のためのフォームスキーマを簡素化
+  - 作成固有のリピーターロジックを削除
 
 - `app/Filament/Resources/TUserSettingResource/Pages/CreateTUserSetting.php`
-  - Implemented Wizard component with custom steps
-  - Added icons and descriptions for each step
-  - Maintained existing record creation logic
-  - Added visual review step
+  - カスタムステップを持つウィザードコンポーネントを実装
+  - 各ステップにアイコンと説明を追加
+  - 既存のレコード作成ロジックを維持
+  - 視覚的確認ステップを追加
 
-### Key Features
+### 主要機能
 
-- **Step Navigation**: Users can navigate between steps using next/previous buttons
-- **Validation**: Each step validates before allowing progression
-- **Skippable Steps**: Non-critical steps can be skipped if needed
-- **Visual Feedback**: Icons and descriptions guide users through the process
-- **Data Persistence**: Form data is maintained across all steps
-- **Responsive Design**: Works on both desktop and mobile devices
+- **ステップナビゲーション**: ユーザーは次/前ボタンを使用してステップ間を移動可能
+- **バリデーション**: 各ステップは進行を許可する前にバリデートされる
+- **スキップ可能なステップ**: 重要でないステップは必要に応じてスキップ可能
+- **視覚的フィードバック**: アイコンと説明がプロセス全体をガイド
+- **データ永続化**: フォームデータはすべてのステップ間で維持される
+- **レスポンシブデザイン**: デスクトップとモバイルデバイスの両方で動作
 
-## Benefits
+## メリット
 
-1. **Improved UX**: Breaks down complex form into manageable steps
-2. **Better Validation**: Step-by-step validation prevents errors
-3. **Visual Guidance**: Clear progress indication and step descriptions
-4. **Flexibility**: Maintains all existing functionality while adding wizard flow
-5. **Accessibility**: Better organization for screen readers and keyboard navigation
+1. **UXの改善**: 複雑なフォームを管理しやすいステップに分割
+2. **より良いバリデーション**: ステップバイステップのバリデーションがエラーを防止
+3. **視覚的ガイダンス**: 明確な進行状況表示とステップ説明
+4. **柔軟性**: ウィザードフローを追加しながら既存のすべての機能を維持
+5. **アクセシビリティ**: スクリーンリーダーとキーボードナビゲーションのためのより良い構成
 
-## Usage
+## 使用方法
 
-1. Navigate to TUserSetting resource
-2. Click "Create" button
-3. Follow the 4-step wizard:
-   - Select user
-   - Configure settings
-   - Add audit info (optional)
-   - Review and confirm
-4. Click submit to create all settings
+1. TUserSettingリソースに移動
+2. 「作成」ボタンをクリック
+3. 4ステップウィザードに従う：
+   - ユーザーを選択
+   - 設定を構成
+   - 監査情報を追加（オプション）
+   - 確認して承認
+4. 送信をクリックしてすべての設定を作成
 
-The wizard maintains all existing functionality including:
-- Multiple setting creation
-- Audit field support
-- Validation rules
-- Redirect behavior
+ウィザードは以下を含む既存のすべての機能を維持します：
+- 複数設定作成
+- 監査フィールドサポート
+- バリデーションルール
+- リダイレクト動作

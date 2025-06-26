@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TUserSettingResource\Pages;
 
 use App\Filament\Resources\TUserSettingResource;
 use App\Models\TUserSetting;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
@@ -52,14 +53,18 @@ class CreateTUserSetting extends CreateRecord
                                 ])
                                 ->columns(2)
                                 ->addActionLabel('+ 設定項目を追加')
-                                ->deleteActionLabel('- 削除')
+                                ->deleteAction(
+                                    fn (Action $action) => $action->label('- 削除')
+                                )
                                 ->reorderableWithButtons()
                                 ->minItems(1)
                                 ->defaultItems(1)
                                 ->collapsible()
                                 ->itemLabel(fn (array $state): ?string => $state['setting_key'] ?? '新しい設定')
                                 ->cloneable()
-                                ->cloneActionLabel('複製'),
+                                ->cloneAction(
+                                    fn (Action $action) => $action->label('複製')
+                                ),
                         ])
                         ->columns(1),
 
@@ -108,7 +113,7 @@ class CreateTUserSetting extends CreateRecord
                                             $key = $setting['setting_key'] ?? '';
                                             $value = $setting['setting_value'] ?? '';
                                             $content .= '<div class="border-l-4 border-blue-500 pl-3">';
-                                            $content .= '<div><strong>' . ($index + 1) . '. ' . htmlspecialchars($key) . '</strong></div>';
+                                            $content .= '<div><strong>' . ((int)$index + 1) . '. ' . htmlspecialchars($key) . '</strong></div>';
                                             $content .= '<div class="text-gray-600">' . htmlspecialchars($value) . '</div>';
                                             $content .= '</div>';
                                         }
@@ -122,7 +127,6 @@ class CreateTUserSetting extends CreateRecord
                         ])
                         ->columns(1),
                 ])
-                ->submitAction(new \Filament\Actions\Action('create'))
                 ->skippable(),
             ])
             ->columns(null);

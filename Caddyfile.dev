@@ -1,0 +1,51 @@
+# Development Caddyfile for FrankenPHP
+{
+	frankenphp {
+		num_threads 1
+	}
+	# Enable debug mode
+	debug
+}
+
+# Development HTTP site
+:80 {
+	# Root directory
+	root * /var/www/public
+
+	# Enable PHP files processing with FrankenPHP
+	php_server {
+		env APP_ENV local
+		env APP_DEBUG true
+	}
+
+	# Handle Laravel routes
+	try_files {path} {path}/ /index.php?{query}
+
+	# Development headers (less restrictive)
+	header {
+		X-Content-Type-Options nosniff
+		-Server
+	}
+
+	# Static file handling (no caching in dev)
+	@static {
+		file
+		path *.css *.js *.ico *.png *.jpg *.jpeg *.gif *.svg *.woff *.woff2 *.ttf *.eot
+	}
+	
+	handle @static {
+		header Cache-Control "no-cache, no-store, must-revalidate"
+		file_server
+	}
+
+	# Enable detailed logging for development
+	log {
+		level DEBUG
+		output stdout
+	}
+
+	# Handle errors with more details
+	handle_errors {
+		respond "Development Error: {http.error.status_code} - {http.error.status_text}" {http.error.status_code}
+	}
+}
