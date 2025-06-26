@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\TImageResource\Pages;
 
 use App\Filament\Resources\TImageResource;
-use App\Models\TImage;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,57 +12,47 @@ class CreateTImage extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Get the uploaded file
-        if (isset($data['image_file'])) {
-            $uploadedFile = $data['image_file'];
+        // Get the uploaded file path (Filament FileUpload returns the stored path)
+        if (isset($data['image_file']) && $data['image_file']) {
+            $storedPath = $data['image_file'];
             
-            // Get file info
-            $originalFilename = $uploadedFile->getClientOriginalName();
-            $mimeType = $uploadedFile->getMimeType();
-            $fileSize = $uploadedFile->getSize();
+            // Get full path to the stored file
+            $fullPath = Storage::disk('public')->path($storedPath);
             
-            // Generate hash of the processed/edited file
-            $fileHash = hash_file('sha256', $uploadedFile->getRealPath());
+            // Extract original filename from the path
+            $pathInfo = pathinfo($storedPath);
+            $convertedFilename = $pathInfo['basename'];
+            $extension = $pathInfo['extension'] ?? '';
             
-            // Get file extension
-            $extension = $uploadedFile->getClientOriginalExtension();
+            // Generate original filename (we'll use the converted filename as base)
+            $originalFilename = $convertedFilename;
             
-            // Generate converted filename with timestamp for uniqueness
-            $convertedFilename = $fileHash . '_' . time() . '.' . $extension;
+            // Get file info from stored file
+            $mimeType = Storage::disk('public')->mimeType($storedPath);
+            $fileSize = Storage::disk('public')->size($storedPath);
             
-            // Store the file (this will be the edited version)
-            $path = $uploadedFile->storeAs('images', $convertedFilename, 'public');
+            // Generate hash of the stored file
+            $fileHash = hash_file('sha256', $fullPath);
             
-            // Get image dimensions of the processed/edited image
+            // Get image dimensions
             $width = null;
             $height = null;
             
-            if (str_starts_with($mimeType, 'image/')) {
+            if (str_starts_with($mimeType, 'image/') && file_exists($fullPath)) {
                 try {
-                    // Get dimensions of the edited image
-                    $imageInfo = getimagesize($uploadedFile->getRealPath());
+                    $imageInfo = getimagesize($fullPath);
                     if ($imageInfo) {
                         $width = $imageInfo[0];
                         $height = $imageInfo[1];
                     }
-                } catch (\Exception $e) {
-                    // Fallback: try to get dimensions from storage
-                    try {
-                        $storedPath = Storage::disk('public')->path($path);
-                        $imageInfo = getimagesize($storedPath);
-                        if ($imageInfo) {
-                            $width = $imageInfo[0];
-                            $height = $imageInfo[1];
-                        }
-                    } catch (\Exception $e2) {
-                        // Ignore errors, dimensions will remain null
-                    }
+                } catch (\Exception) {
+                    // Ignore errors, dimensions will remain null
                 }
             }
             
             // Generate URLs
-            $uploadUrl = Storage::disk('public')->url($path);
-            $uploadPath = $path;
+            $uploadUrl = Storage::disk('public')->url($storedPath);
+            $uploadPath = $storedPath;
             
             // Remove the file upload data and replace with processed data
             unset($data['image_file']);
