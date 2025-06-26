@@ -5,7 +5,7 @@
 ## プロジェクト概要
 
 FilamentベースのLaravelアプリケーションです。以下の機能を含みます：
-- Dockerベースの開発環境（PHP-FPM、Nginx、MySQL、Valkey/Redis）
+- FrankenPHPベースの高速開発環境（MySQL、Valkey/Redis）
 - ロールと設定を持つユーザー管理システム
 - 画像管理機能
 - 監査ログ機能
@@ -16,6 +16,7 @@ FilamentベースのLaravelアプリケーションです。以下の機能を�
 ### バックエンド
 - **Laravel**: PHPフレームワーク
 - **Filament v3**: 管理パネルフレームワーク
+- **FrankenPHP**: 高性能PHPアプリケーションサーバー
 - **MySQL 8.0**: プライマリデータベース
 - **Redis/Valkey**: キャッシュとセッションストレージ
 - **Docker**: コンテナ化開発環境
@@ -75,10 +76,23 @@ database/
 
 ## 開発環境
 
-### Docker設定
-- `docker-compose up -d`で開発環境を開始
-- `http://localhost`でアプリケーションにアクセス
-- `http://localhost/admin`でFilament管理画面にアクセス
+### FrankenPHP環境の起動
+```bash
+# 開発環境を開始
+docker-compose -f docker-compose.frankenphp.dev.yml up -d
+
+# 本番環境を開始
+docker-compose -f docker-compose.frankenphp.yml up -d
+
+# 簡易起動スクリプト（推奨）
+./start-frankenphp.sh dev    # 開発環境
+./start-frankenphp.sh prod   # 本番環境
+```
+
+### アクセス情報
+- **アプリケーション**: `http://localhost`
+- **Filament管理画面**: `http://localhost/admin`
+- **管理者ログイン**: admin@example.com / password
 
 ### データベースアクセス
 - ホスト: `localhost`（ホストから）または`db`（コンテナから）
@@ -89,19 +103,22 @@ database/
 
 ### 主要コマンド
 ```bash
-# PHPコンテナに入る
-docker-compose exec app bash
+# FrankenPHPコンテナに入る
+docker exec -it filament-frankenphp-dev bash
 
 # マイグレーション実行
-php artisan migrate
+docker exec filament-frankenphp-dev php artisan migrate
 
 # Filamentユーザー作成
-php artisan make:filament-user
+docker exec filament-frankenphp-dev php artisan make:filament-user
 
 # キャッシュクリア
-php artisan cache:clear
-php artisan config:clear
-php artisan view:clear
+docker exec filament-frankenphp-dev php artisan cache:clear
+docker exec filament-frankenphp-dev php artisan config:clear
+docker exec filament-frankenphp-dev php artisan view:clear
+
+# Filament設定
+docker exec filament-frankenphp-dev php artisan filament:install --panels
 ```
 
 ## セキュリティ考慮事項
@@ -177,10 +194,23 @@ php artisan view:clear
 
 ## 注意事項
 
-- このプロジェクトは一貫性のためにDockerベースの開発環境を使用
+- このプロジェクトはFrankenPHPベースの高性能開発環境を使用
 - アプリケーションは英語と日本語コンテンツの両方をサポート
 - 監査ログは全主要モデルに実装済み
 - 管理データのエクスポート機能が利用可能
-- コードベースはFilament固有のパターンを持つLaravelベストプラクティスに従う
+- コードベースはFilament v3固有のパターンを持つLaravelベストプラクティスに従う
+- git filemodeは無効化済み（Docker環境での権限問題を回避）
+
+## 重要な設定
+
+### Git設定
+```bash
+git config core.filemode false  # ファイル権限変更を無視
+```
+
+### 管理者アカウント
+- Email: admin@example.com
+- Password: password
+- 管理画面: http://localhost/admin
 
 疑問がある場合は、既存のコードパターンを参照し、確立されたアーキテクチャとの一貫性を維持してください。

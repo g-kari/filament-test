@@ -1,25 +1,25 @@
-# Filament-test
+# Filament Laravel アプリケーション
 
-## Docker開発環境
+## FrankenPHP高性能開発環境
 
-このリポジトリには、Filament管理パネルをテストするための、PHP-FPM、Nginx、MySQL、Valkey（Redisフォーク）を含む完全なDockerベースの開発環境が含まれています。
+このリポジトリには、FrankenPHP、MySQL、Valkey（Redisフォーク）を使用したFilament v3管理パネルの完全な開発環境が含まれています。FrankenPHPは従来のPHP-FPM + Nginxより高性能なPHPアプリケーションサーバーです。
 
 ### 前提条件
 
 - システムにDockerとDocker Composeがインストールされていること
 - Git
 
-### 始めに
+### クイックスタート
 
 1. このリポジトリをクローン：
-   ```
+   ```bash
    git clone https://github.com/g-kari/filament-test.git
    cd filament-test
    ```
 
-2. Dockerコンテナを開始：
-   ```
-   docker-compose up -d
+2. FrankenPHP開発環境を開始：
+   ```bash
+   ./start-frankenphp.sh dev
    ```
 
 3. ブラウザでFilament管理パネルにアクセス：
@@ -27,11 +27,26 @@
    http://localhost/admin
    ```
 
-### 環境詳細
+4. 管理者アカウントでログイン：
+   - **Email**: admin@example.com
+   - **Password**: password
 
-- **PHP-FPM**: Laravel/Filamentに必要な一般的な拡張機能を持つPHP 8.2
-- **Nginx**: PHPアプリケーションを提供するように設定された最新安定版
-- **MySQL**: 永続ストレージを持つバージョン8.0
+## アプリケーション機能
+
+このFilamentアプリケーションには以下の機能が含まれています：
+
+- **ユーザー管理**: ロールベースアクセス制御付きユーザー管理
+- **画像管理**: ファイルアップロード、エディター、メタデータ管理
+- **設定管理**: マルチページウィザードによるユーザー設定管理
+- **監査ログ**: 全操作の追跡とログ記録
+- **データエクスポート**: Excel形式でのデータエクスポート
+
+### 技術スタック
+
+- **FrankenPHP**: 高性能PHPアプリケーションサーバー（PHP 8.4）
+- **Laravel**: PHPフレームワーク
+- **Filament v3**: 管理パネルフレームワーク
+- **MySQL 8.0**: プライマリデータベース
 - **Valkey**: Redis互換のインメモリデータストア
 
 ### データベース接続
@@ -47,69 +62,44 @@
 - ホスト: `localhost`（ホストから）または`valkey`（コンテナから）
 - ポート: `6379`
 
-### Laravel & Filamentセットアップ
+## 開発コマンド
 
-FilamentでLaravelプロジェクトを新しくセットアップするには：
-
-1. PHPコンテナでbashを実行：
-   ```
-   docker-compose exec app bash
-   ```
-
-2. 新しいLaravelプロジェクトを作成（まだ存在しない場合）：
-   ```
-   composer create-project laravel/laravel .
-   ```
-
-3. Filamentをインストール：
-   ```
-   composer require filament/filament:"^3.0-stable" -W
-   ```
-
-4. Filamentのインストールを実行：
-   ```
-   php artisan filament:install --panels
-   ```
-
-5. Filament用のユーザーを作成：
-   ```
-   php artisan make:filament-user
-   ```
-
-### トラブルシューティング
-
-問題が発生した場合：
-
-1. コンテナログを確認：
-   ```
-   docker-compose logs
-   ```
-
-2. すべてのコンテナが実行中であることを確認：
-   ```
-   docker-compose ps
-   ```
-
-3. すべてのコンテナを再起動：
-   ```
-   docker-compose restart
-   ```
-
-## フランケンPHP対応
-
-このプロジェクトはフランケンPHP（FrankenPHP）での実行もサポートしています。フランケンPHPは、Go言語で書かれた最新のPHPアプリケーションサーバーで、従来のPHP-FPM + Nginxの組み合わせよりも高性能です。
-
-### フランケンPHPで起動
+### FrankenPHPコンテナでの作業
 
 ```bash
-# 開発環境で起動
-./start-frankenphp.sh dev
+# FrankenPHPコンテナに入る
+docker exec -it filament-frankenphp-dev bash
 
-# 本番環境で起動
-./start-frankenphp.sh prod
+# マイグレーション実行
+docker exec filament-frankenphp-dev php artisan migrate
+
+# キャッシュクリア
+docker exec filament-frankenphp-dev php artisan cache:clear
+docker exec filament-frankenphp-dev php artisan config:clear
+
+# 新しいFilamentユーザー作成
+docker exec filament-frankenphp-dev php artisan make:filament-user
 ```
 
-### フランケンPHPの利点
+### 環境管理
+
+```bash
+# 開発環境を開始
+./start-frankenphp.sh dev
+
+# 本番環境を開始  
+./start-frankenphp.sh prod
+
+# Docker Compose直接使用
+docker-compose -f docker-compose.frankenphp.dev.yml up -d  # 開発
+docker-compose -f docker-compose.frankenphp.yml up -d      # 本番
+```
+
+## FrankenPHPについて
+
+このプロジェクトはFrankenPHP（Go言語で書かれた最新のPHPアプリケーションサーバー）を使用し、従来のPHP-FPM + Nginxの組み合わせよりも高性能を実現しています。
+
+### FrankenPHPの利点
 
 - **高性能**: 従来のPHP-FPM + Nginxより高速
 - **メモリ効率**: より少ないメモリ使用量
@@ -124,6 +114,31 @@ FilamentでLaravelプロジェクトを新しくセットアップするには�
 - `docker-compose.frankenphp.yml` - 本番環境用Docker設定
 - `docker-compose.frankenphp.dev.yml` - 開発環境用Docker設定
 
-## 本番ホスティング
+### トラブルシューティング
 
-本番デプロイメントの考慮事項、ホスティングサービスの推奨事項、デプロイメント戦略については、[HOSTING.md](HOSTING.md)を参照してください。
+問題が発生した場合：
+
+```bash
+# コンテナログを確認
+docker-compose -f docker-compose.frankenphp.dev.yml logs
+
+# すべてのコンテナが実行中であることを確認
+docker-compose -f docker-compose.frankenphp.dev.yml ps
+
+# すべてのコンテナを再起動
+docker-compose -f docker-compose.frankenphp.dev.yml restart
+
+# キャッシュクリア
+docker exec filament-frankenphp-dev php artisan cache:clear
+```
+
+## ドキュメント
+
+- **[CLAUDE.md](CLAUDE.md)** - Claude Code向けの詳細な開発ガイダンス
+- **[HOSTING.md](HOSTING.md)** - 本番デプロイメントガイド
+- **[MULTI_PAGE_FORM.md](MULTI_PAGE_FORM.md)** - マルチページウィザード実装詳細
+- **[Post.md](Post.md)** - モデル実装例
+
+## ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
