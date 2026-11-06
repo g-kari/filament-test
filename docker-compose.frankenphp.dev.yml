@@ -33,7 +33,7 @@ services:
 
   # MySQL Service (unchanged)
   db:
-    image: mysql:8.0
+    image: mysql:8.3
     container_name: filament-mysql-dev
     restart: unless-stopped
     environment:
